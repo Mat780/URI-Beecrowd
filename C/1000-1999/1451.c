@@ -1,71 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct cel {
-    int chave;
-    struct cel *ant;
-    struct cel *prox;
-} celula;
+typedef struct cel{
+	char caractere;
+	struct cel *prox;
+}celula;
 
-
-void insere_dup_C (int y, celula *lst) {
-
-    celula *p, *q, *nova;
-    nova = (celula *) malloc(sizeof (celula));
-
-    nova->chave = y;
-    p = lst;
-    q = lst->prox;
-
-    while (q != NULL) {
-        p = q;
-        q = q->prox;
-    }
-
-    nova->ant = p;
-    nova->prox = q;
-    p->prox = nova;
-
-    if (q != NULL)
-        q->ant = nova;
+void insere(int y, celula **lst)
+{
+	celula *nova;
+	nova = (celula *) malloc(sizeof (celula));
+	nova->caractere = y;
+	nova->prox = (*lst)->prox;
+	(*lst)->prox = nova;
+	*lst = nova;
 }
 
-
-void imprime_lista (celula *lst) {
+void imprime_lista(celula *lst) {
 
     celula *p;
 
-    for (p = lst; p != NULL; p = p->prox) {
-        printf("%d\n", p->chave);
+    for (p = lst; p->prox != NULL; p = p->prox) {
+        printf("%c", p->caractere);
     }
-
-}
-
-void org_list(celula *lst) {
-	celula *p, *q;
-
-	p = lst;
-	q = lst->prox;
 	
-    while (q != NULL) {
-        p = q;
-        q = q->prox;
-    }
-
-	while(p != NULL){
-
-
-		q = p;
-		p = p->ant;
-		
-	}
+    printf("%c\n", p->caractere);
 
 }
 
 void remover(celula *p){
-
     celula *temp;
-
     while(p != NULL){
         temp = p;
         p = p->prox;
@@ -74,40 +38,46 @@ void remover(celula *p){
 
 }
 
+int main(void){
 
-int main (void) {
+	char c;
+	celula *lista, *frente, *aux;
+	lista = (celula *) malloc(sizeof (celula));
 
-    celula *lista;
-    lista = (celula *) malloc(sizeof (celula));
-    
-    lista->ant = NULL;
-    lista->prox = NULL;
-		
-	while (scanf("%c", &c) != EOF) {
+	lista->prox = NULL;
 
-		// ENQUANTO TIVER RECEBENDO VAI COLOCANDO NO REGISTRO
-		// SENÃO ORGANIZA, IMPRIME E REINICIA A CELULA
-		if (c != '\n') {
-			insere_dup_C(c, lista);
-		} 
+	frente = lista;
+	aux = lista;
+	
+	while(scanf("%c", &c) != EOF){
 
-        else {
-			org_list(lista);
-			imprime_lista(lista);
-			remover(lista);
+		if(c == '\n'){
 
-			celula *lista;
-			lista = (celula *) malloc(sizeof (celula));
+			if(lista->prox != NULL){
+				imprime_lista(lista->prox);
+				remover(lista);
+
+				lista = (celula *) malloc(sizeof (celula));
+				lista->prox = NULL;
+				frente = lista;
+				aux = lista;
+			}
 			
-			lista->ant = NULL;
-			lista->prox = NULL;
+		} else if(c == '['){
+			aux = lista;
+
+		} else if(c == ']'){
+			aux = frente;
+
+		} else {
+			insere(c, &aux);
+
+			if(aux->prox == NULL){
+				frente = aux;
+			}
+
 		}
-
 	}
-
-	org_list(lista);
-	imprime_lista(lista);
-    
 
 	return 0;
 
